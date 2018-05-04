@@ -1,3 +1,12 @@
+/*
+In this program I attempt to simulate the probability that individuals rent and return a bike to one 
+particular station each hour. In this attempt I use a Poisson distribution to generate random integers 
+which represent the number of bikes rented and returned to the station. 
+
+A problem that in this program is that if the rate in > rate out and vice versa, then this station's 
+inventory is either full or empty.
+*/
+
 #include <iostream>
 #include <chrono>
 #include <random>
