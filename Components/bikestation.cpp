@@ -1,5 +1,6 @@
 #include "bikestation.h"
-#include <chrono>
+
+#include <QDateTime>
 
 BikeStation::BikeStation():
     mName(""),
@@ -9,7 +10,7 @@ BikeStation::BikeStation():
     mProbRental(0.0),
     mLastRentedCount(0),
     mLastReturnedCount(0),
-    mRandGenerator(std::chrono::system_clock::now().time_since_epoch().count()),
+    mRandGenerator(QDateTime::currentSecsSinceEpoch()),
     mPosDistrArrival(0.0)
 {}
 
@@ -21,7 +22,7 @@ BikeStation::BikeStation(const QString & name, int inventory, double avg_arrival
     mProbRental(prob_rental),
     mLastRentedCount(0),
     mLastReturnedCount(0),
-    mRandGenerator(std::chrono::system_clock::now().time_since_epoch().count()),
+    mRandGenerator(QDateTime::currentSecsSinceEpoch()),
     mPosDistrArrival(avg_arrival)
 {
     setProbRental(prob_rental);
@@ -35,7 +36,7 @@ BikeStation::BikeStation(const QString & name, int inventory, int docks, double 
     mProbRental(prob_rental),
     mLastRentedCount(0),
     mLastReturnedCount(0),
-    mRandGenerator(std::chrono::system_clock::now().time_since_epoch().count()),
+    mRandGenerator(QDateTime::currentSecsSinceEpoch()),
     mPosDistrArrival(avg_arrival)
 {
     setDocks(docks);
@@ -54,7 +55,9 @@ void BikeStation::setAvgArrival(double value){
 int BikeStation::amountRented(){
     int rented = 0;
     std::binomial_distribution<int> actual_rentals(getActualArrival(), mProbRental);
+
     rented = actual_rentals(mRandGenerator);
+    rented = ((mInventory - rented) < 0)? mInventory : rented;
     mInventory -= rented;
 
     return rented;
@@ -63,7 +66,7 @@ int BikeStation::amountRented(){
 int BikeStation::amountReturned(int amount){
     mInventory += amount;
     amount = mInventory - mDocks;
-    mInventory = mDocks;
+    mInventory = (mInventory > mDocks)? mDocks : mInventory;
 
     return (amount < 0) ? 0 : amount;
 }
